@@ -1,0 +1,15 @@
+{
+    "restartable": "rs",
+    "ignore": [
+        ".git",
+        "node_modules/",
+        "coverage/"
+    ],
+    "verbose": true,
+    "delay": "1000",
+    "watch": [
+        "src/"
+    ],
+    "exec": "ts-node ./src/index.ts",
+    "ext": ".ts"
+}
