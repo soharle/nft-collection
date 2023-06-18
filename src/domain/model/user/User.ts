@@ -8,5 +8,5 @@ export type User = {
 export type UserJwt = {
     email: string,
     name: string,
-    id: string
+    _id: string
 }

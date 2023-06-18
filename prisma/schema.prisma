@@ -26,6 +26,7 @@ model Collection {
   title       String
   comments    Comments[]
   Nfts        Nft[]
+  isPublic    Boolean    @default(false)
 }
 
 model Comments {
@@ -38,7 +39,7 @@ model Comments {
 
 model Nft {
   id String @id @default(uuid())
-  
+
   Collection   Collection @relation(fields: [collectionId], references: [id])
   collectionId String
 }

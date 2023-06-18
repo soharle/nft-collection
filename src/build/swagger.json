@@ -6,9 +6,46 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"HealthCheckResponse": {
+			"CollectionResponse": {
 				"properties": {
-					"date": {
+					"message": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					},
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"isPublic": {
+						"type": "boolean"
+					},
+					"userId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message",
+					"success",
+					"id",
+					"title",
+					"description",
+					"isPublic",
+					"userId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BaseResponse": {
+				"properties": {
+					"message": {
 						"type": "string"
 					},
 					"success": {
@@ -16,7 +53,7 @@
 					}
 				},
 				"required": [
-					"date",
+					"message",
 					"success"
 				],
 				"type": "object"
@@ -40,6 +77,115 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"CollectionRequest": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"isPublic": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"isPublic"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CollectionUpdateRequest": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"isPublic": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"id",
+					"title",
+					"description",
+					"isPublic"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CollectionListResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					},
+					"collections": {
+						"items": {
+							"properties": {
+								"userId": {
+									"type": "string"
+								},
+								"isPublic": {
+									"type": "boolean"
+								},
+								"description": {
+									"type": "string",
+									"nullable": true
+								},
+								"title": {
+									"type": "string"
+								},
+								"id": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"userId",
+								"isPublic",
+								"description",
+								"title",
+								"id"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"message",
+					"success",
+					"collections"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HealthCheckResponse": {
+				"properties": {
+					"date": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"date",
+					"success"
+				],
+				"type": "object"
 			},
 			"UserLoginRequest": {
 				"properties": {
@@ -112,6 +258,477 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/collection/create": {
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CollectionResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not create the collection"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CollectionRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/collection/update": {
+			"put": {
+				"operationId": "Update",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CollectionResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not update the collection"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CollectionUpdateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/collection/delete/{collectionId}": {
+			"delete": {
+				"operationId": "Delete",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not delete the collection"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/collection/get/{collectionId}": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CollectionResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve the collection"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/collection/getAll": {
+			"get": {
+				"operationId": "GetAll",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CollectionListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve the collections"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/health": {
 			"get": {
 				"operationId": "Invoke",

@@ -1,7 +1,5 @@
 import { inject, injectable } from "tsyringe"
 import { User } from "../../model/user/User"
-import { UserRegisterRequest } from "../../DTOs/UserRegister"
-import { UserLoginRequest } from "../../DTOs/UserLogin"
 import { IUserRepository } from "../../model/user/IUserRepository";
 import bcrypt from 'bcrypt';
 import { Configuration } from "../../../config";
@@ -14,7 +12,7 @@ export class AuthService {
   constructor(@inject("IUserRepository") userRepository: IUserRepository, private config: Configuration) {
     this.userRepository = userRepository;
   }
-  
+
   public async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10)
   }
