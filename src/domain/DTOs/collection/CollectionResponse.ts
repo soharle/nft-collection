@@ -1,4 +1,3 @@
-import { Collection } from "../../model/collection/Collection";
 import { BaseResponse } from "../BaseResponse";
 
 export interface CollectionResponse extends BaseResponse {

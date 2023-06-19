@@ -27,11 +27,10 @@ export class CollectionController extends Controller {
     })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not create the collection" })
-    @Post("create")
     @Security("jwt")
+    @Post("create")
     public async create(@Body() collection: CollectionRequest, @Request() request: express.Request): Promise<CollectionResponse | BaseResponse> {
         const user = request.user as UserJwt;
-        console.log(user);
         const result = await this.collectionService.create(collection.title, collection.description, collection.isPublic, user._id);
         if (result === null) {
             this.setStatus(400);

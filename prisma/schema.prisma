@@ -16,6 +16,7 @@ model User {
   password    String
   name        String
   Collections Collection[]
+  Comments    Comments[]
 }
 
 model Collection {
@@ -30,11 +31,13 @@ model Collection {
 }
 
 model Comments {
-  id           String      @id @default(uuid())
+  id           String     @id @default(uuid())
   rating       Int
   text         String?
-  Collection   Collection? @relation(fields: [collectionId], references: [id])
-  collectionId String?
+  User         User       @relation(fields: [userId], references: [id])
+  userId       String
+  Collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String
 }
 
 model Nft {

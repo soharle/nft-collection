@@ -54,19 +54,6 @@ export class CollectionRepository implements ICollectionRepository {
         }
     }
 
-    public async get(collectionId: string): Promise<Collection | null> {
-        try {
-            return this.db.collection.findUnique({
-                where: {
-                    id: collectionId,
-                }
-            });
-        } catch (e) {
-            this.logger.error((e as Error).message);
-            return null;
-        }
-    }
-
     public async delete(collectionId: string): Promise<Collection | null> {
         try {
             return this.db.collection.delete({
