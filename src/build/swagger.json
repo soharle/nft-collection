@@ -316,6 +316,111 @@
 				],
 				"type": "object"
 			},
+			"NftResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tokenId": {
+						"type": "string"
+					},
+					"tokenAddress": {
+						"type": "string"
+					},
+					"tokenHash": {
+						"type": "string"
+					},
+					"tokenUri": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"message",
+					"success",
+					"name",
+					"tokenId",
+					"tokenAddress",
+					"tokenHash",
+					"tokenUri"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NftCreateRequest": {
+				"properties": {
+					"tokenId": {
+						"type": "string"
+					},
+					"tokenAddress": {
+						"type": "string"
+					},
+					"collectionId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"tokenId",
+					"tokenAddress",
+					"collectionId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NftListResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					},
+					"nfts": {
+						"items": {
+							"properties": {
+								"tokenUri": {
+									"type": "string",
+									"nullable": true
+								},
+								"tokenHash": {
+									"type": "string"
+								},
+								"tokenAddress": {
+									"type": "string"
+								},
+								"tokenId": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"tokenUri",
+								"tokenHash",
+								"tokenAddress",
+								"tokenId",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"message",
+					"success",
+					"nfts"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserLoginRequest": {
 				"properties": {
 					"email": {
@@ -1251,6 +1356,163 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/Nft/create": {
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NftResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Bad request"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Nft"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NftCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Nft/list/{query}": {
+			"get": {
+				"operationId": "List",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NftListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not list nfts"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Nft"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/user/signin": {

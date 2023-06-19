@@ -1,3 +1,7 @@
 export type Nft = {
-    id: string,
+    name: string,
+    tokenId: string,
+    tokenAddress: string,
+    tokenHash: string,
+    tokenUri: string
 }

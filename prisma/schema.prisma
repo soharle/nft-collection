@@ -41,8 +41,12 @@ model Comments {
 }
 
 model Nft {
-  id String @id @default(uuid())
-
+  id           String     @id @default(uuid())
+  tokenId      String
+  tokenAddress String
+  name         String
+  tokenHash    String
+  tokenUri      String?
   Collection   Collection @relation(fields: [collectionId], references: [id])
   collectionId String
 }
