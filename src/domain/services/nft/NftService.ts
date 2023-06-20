@@ -28,7 +28,15 @@ export class NftService {
         return this.api.searchByNameNft(query);
     }
 
-    public async getAllByCollection(collectionId: string): Promise<Nft[]> {
+    public async getAllByCollectionPublic(collectionId: string): Promise<Nft[] | null> {
+        return this.nftRepository.getAllByCollectionPublic(collectionId);
+    }
+
+    public async getAllByCollection(collectionId: string, userId: string): Promise<Nft[] | null> {
+        const collection = await this.collectionRepository.findById(collectionId);
+        if (!collection || collection.userId !== userId) {
+            return null;
+        }
         return this.nftRepository.getAllByCollection(collectionId);
     }
 }

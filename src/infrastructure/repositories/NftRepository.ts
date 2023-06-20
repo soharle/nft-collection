@@ -6,6 +6,19 @@ import { ILogger } from "../../shared/interface/ILogger";
 @injectable()
 export class NftRepository implements INftRepository {
     constructor(private db: PrismaClient, @inject("ILogger") private logger: ILogger) { }
+    public async getAllByCollection(collectionId: string): Promise<Nft[] | null> {
+        try {
+            return await this.db.nft.findMany({
+                where: {
+                    collectionId: collectionId
+                }
+            });
+        } catch (e) {
+            this.logger.error((e as Error).message);
+            return null;
+        }
+    }
+
     public async create(tokenId: string, tokenAddress: string, name: string, tokenHash: string, tokenUri: string, collectionId: string): Promise<Nft | null> {
         try {
             return this.db.nft.create({
@@ -23,16 +36,22 @@ export class NftRepository implements INftRepository {
             return null;
         }
     }
-    public async getAllByCollection(collectionId: string): Promise<Nft[]> {
+    public async getAllByCollectionPublic(collectionId: string): Promise<Nft[] | null> {
         try {
             return this.db.nft.findMany({
+                include: {
+                    Collection: true
+                },
                 where: {
-                    collectionId: collectionId
+                    collectionId: collectionId,
+                    Collection: {
+                        isPublic: true
+                    }
                 }
             });
         } catch (e) {
             this.logger.error((e as Error).message);
-            return [];
+            return null;
         }
     }
     public async delete(id: string): Promise<boolean> {

@@ -8,6 +8,24 @@ import { ILogger } from "../../shared/interface/ILogger";
 @injectable()
 export class CommentsRepository implements ICommentsRepository {
     constructor(private db: PrismaClient, @inject("ILogger") private logger: ILogger) { }
+    public async getAllByCollectionPublic(collectionId: string): Promise<Comment[]> {
+        try {
+            return this.db.comments.findMany({
+                include: {
+                    Collection: true
+                },
+                where: {
+                    collectionId: collectionId,
+                    Collection: {
+                        isPublic: true
+                    }
+                }
+            });
+        } catch (e) {
+            this.logger.error((e as Error).message);
+            return [];
+        }
+    }
     public async getAllByCollection(collectionId: string): Promise<Comment[]> {
         try {
             return this.db.comments.findMany({

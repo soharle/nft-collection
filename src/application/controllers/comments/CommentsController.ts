@@ -6,6 +6,7 @@ import { CommentsCreateRequest, CommentsUpdateRequest } from "../../../domain/DT
 import { CommentsListResponse, CommentsResponse } from "../../../domain/DTOs/comments/CommentsResponse";
 import { CommentsService } from "../../../domain/services/comments/CommentsService";
 import { UserJwt } from "../../../domain/model/user/User";
+import { UserLoginResponse } from "../../../domain/DTOs/user/UserLogin";
 
 
 @Route("comments")
@@ -16,6 +17,7 @@ export class CommentsController extends Controller {
         super();
     }
 
+    @Response<UserLoginResponse>(401, "Unauthorized", { success: false, message: "Invalid credentials", token: "" })
     @Response<CommentsResponse>(200, "Comment created successfully", { success: true, message: "Comment created successfully", id: "", text: "Some text", rating: 5, userId: "", collectionId: "" })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not create comment" })
@@ -47,6 +49,7 @@ export class CommentsController extends Controller {
         }
     }
 
+    @Response<UserLoginResponse>(401, "Unauthorized", { success: false, message: "Invalid credentials", token: "" })
     @Response<CommentsResponse>(200, "Comment updated successfully", { success: true, message: "Comment updated successfully", id: "", text: "Some text", rating: 5, userId: "", collectionId: "" })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not update comment" })
@@ -78,6 +81,7 @@ export class CommentsController extends Controller {
         }
     }
 
+    @Response<UserLoginResponse>(401, "Unauthorized", { success: false, message: "Invalid credentials", token: "" })
     @Response<BaseResponse>(200, "Comment deleted successfully", { success: true, message: "Comment deleted successfully" })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not delete comment" })
@@ -106,16 +110,16 @@ export class CommentsController extends Controller {
 
     @Response<CommentsListResponse>(200, "Comments retrieved successfully", { success: true, message: "Comments retrieved successfully", comments: [{ id: "", text: "Some text", rating: 5, userId: "", collectionId: "" }] })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
-    @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not retrieve comments" })
+    @Response<BaseResponse>(404, "Not found", { success: false, message: "Could not retrieve comments" })
     @Security("jwt")
-    @Get("byCollection/{collectionId}")
-    public async getCommentsByCollectionId(@Path() collectionId: string, @Request() request: express.Request): Promise<CommentsListResponse | null> {
+    @Get("collection/{collectionId}")
+    public async getCommentsByCollectionId(@Path() collectionId: string, @Request() request: express.Request): Promise<CommentsListResponse | BaseResponse> {
         try {
             const user = request.user as UserJwt;
             const result = await this.commentsService.getCommentsByCollectionId(collectionId, user._id);
             if (result === null) {
-                this.setStatus(400);
-                return null;
+                this.setStatus(404);
+                return { success: false, message: "Could not retrieve comments" };
             }
             return {
                 success: true,
@@ -133,7 +137,7 @@ export class CommentsController extends Controller {
         }
         catch (err) {
             this.setStatus(500);
-            return null;
+            return { success: false, message: "Internal Server Error" };
         }
     }
 
@@ -141,7 +145,7 @@ export class CommentsController extends Controller {
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not retrieve comments" })
     @Security("jwt")
-    @Get("getAll")
+    @Get("get")
     public async getCommentsByUserId(@Request() request: express.Request): Promise<CommentsListResponse | null> {
         try {
             const user = request.user as UserJwt;
@@ -169,4 +173,32 @@ export class CommentsController extends Controller {
             return null;
         }
     }
+
+
+    @Response<CommentsListResponse>(200, "Comments retrieved successfully", { success: true, message: "Comments retrieved successfully", comments: [{ id: "", text: "Some text", rating: 5, userId: "", collectionId: "" }] })
+    @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
+    @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not retrieve comments" })
+    @Get("public/collection/{collectionId}")
+    public async getPublicCommentsByCollectionId(@Path() collectionId: string): Promise<CommentsListResponse | BaseResponse> {
+        const result = await this.commentsService.getPublicCommentsByCollectionId(collectionId);
+        if (result === null) {
+            this.setStatus(400);
+            return { success: false, message: "Could not retrieve comments" }
+        }
+        return {
+            success: true,
+            message: "Comments retrieved successfully",
+            comments: result.map((comment) => {
+                return {
+                    id: comment.id,
+                    text: comment.text,
+                    rating: comment.rating,
+                    userId: comment.userId,
+                    collectionId: comment.collectionId
+                }
+            })
+        }
+
+    }
+
 }

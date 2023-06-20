@@ -33,9 +33,11 @@ export class ApiRouter {
           swaggerUi.generateHTML(await import("../../build/swagger.json"))
         );
       })
-      .use(this.errorHandler.handle);
+
 
     RegisterRoutes(router);
+
+    router.use(this.errorHandler.handle);
 
     return router;
   }

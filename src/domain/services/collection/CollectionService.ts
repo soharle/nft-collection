@@ -12,6 +12,10 @@ export class CollectionService {
         return this.collectionRepository.create(title, description, isPublic, userId);
     }
 
+    public async getPublic(id: string): Promise<Collection | null> {
+        return this.collectionRepository.getPublic(id);
+    }
+
     public async get(id: string, userId: string): Promise<Collection | null> {
         const collection = await this.collectionRepository.findById(id);
         //check if collection exists and if it belongs to the user
@@ -23,6 +27,10 @@ export class CollectionService {
 
     public async getAll(userId: string): Promise<Collection[]> {
         return this.collectionRepository.allFromUser(userId);
+    }
+
+    public async getAllPublic(): Promise<Collection[]> {
+        return this.collectionRepository.allPublic();
     }
 
     public async delete(collectionId: string, userId: string): Promise<Collection | null> {

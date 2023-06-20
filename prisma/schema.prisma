@@ -36,7 +36,7 @@ model Comments {
   text         String?
   User         User       @relation(fields: [userId], references: [id])
   userId       String
-  Collection   Collection @relation(fields: [collectionId], references: [id])
+  Collection   Collection @relation(fields: [collectionId], onDelete: Cascade, references: [id])
   collectionId String
 }
 
@@ -46,7 +46,7 @@ model Nft {
   tokenAddress String
   name         String
   tokenHash    String
-  tokenUri      String?
-  Collection   Collection @relation(fields: [collectionId], references: [id])
+  tokenUri     String?
+  Collection   Collection @relation(fields: [collectionId], onDelete: Cascade, references: [id])
   collectionId String
 }

@@ -7,5 +7,6 @@ export interface ICommentsRepository {
     updateComment(commentId: string, text: string | null, rating: number): Promise<Comment | null>;
     deleteComment(id: string): Promise<Comment | null>;
     getAllByCollection(collectionId: string): Promise<Comment[]>;
+    getAllByCollectionPublic(collectionId: string): Promise<Comment[]>;
     getAllByUser(user: string): Promise<Comment[]>;
 }

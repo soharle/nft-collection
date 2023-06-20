@@ -43,11 +43,15 @@ export class CommentsService {
     public async getCommentsByCollectionId(collectionId: string, userId: string): Promise<Comments[] | null> {
         const collection = await this.collectionRepository.findById(collectionId);
         //check if collection exists and if it is public
-        if (collection === null || !collection.isPublic || collection.userId !== userId) {
+        if (collection === null || !collection.isPublic && collection.userId !== userId) {
             return null;
         }
 
         return this.commentsRepository.getAllByCollection(collectionId);
+    }
+
+    public async getPublicCommentsByCollectionId(collectionId: string): Promise<Comments[] | null> {
+        return this.commentsRepository.getAllByCollectionPublic(collectionId);
     }
 
     public async getCommentsByUserId(userId: string): Promise<Comments[] | null> {

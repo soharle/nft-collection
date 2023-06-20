@@ -101,8 +101,7 @@ export class CollectionController extends Controller {
 
     @Response<UserLoginResponse>(401, "Unauthorized", { success: false, message: "Invalid credentials", token: "" })
     @Response<CollectionResponse>(200, "Collection retrieved with success", {
-        success: true, message: "Collection retrieved with success", id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        title: "Title",
+        success: true, message: "Collection retrieved with success", id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", title: "Title",
         description: "Description about the collection",
         isPublic: false,
         userId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -130,16 +129,18 @@ export class CollectionController extends Controller {
     }
 
     @Response<UserLoginResponse>(401, "Unauthorized", { success: false, message: "Invalid credentials", token: "" })
-    @Response<CollectionResponse[]>(200, "Collections retrieved with success", [{
-        success: true, message: "Collection retrieved with success", id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        title: "Title",
-        description: "Description about the collection",
-        isPublic: false,
-        userId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    }])
+    @Response<CollectionListResponse>(200, "Collections retrieved with success", {
+        success: true, message: "Collections retrieved with success", collections: [{
+            id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            title: "Title",
+            description: "Description about the collection",
+            isPublic: false,
+            userId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }]
+    })
     @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
     @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not retrieve the collections" })
-    @Get("getAll")
+    @Get("get")
     @Security("jwt")
     public async getAll(@Request() request: express.Request): Promise<CollectionListResponse | BaseResponse> {
         const user = request.user as UserJwt;
@@ -164,4 +165,64 @@ export class CollectionController extends Controller {
         };
     }
 
+    @Response<CollectionListResponse>(200, "Collections retrieved with success", {
+        success: true, message: "Collection retrieved with success", collections: [{
+            id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            title: "Title",
+            description: "Description about the collection",
+            isPublic: true,
+            userId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }]
+    })
+    @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
+    @Response<BaseResponse>(400, "Bad request", { success: false, message: "Could not retrieve the collections" })
+    @Get("public/get")
+    public async getAllPublic(): Promise<CollectionListResponse | BaseResponse> {
+        const result = await this.collectionService.getAllPublic();
+        if (result === null) {
+            this.setStatus(400);
+            return { success: false, message: "Could not retrieve the collections" }
+        }
+
+        return {
+            success: true,
+            message: "Collections retrieved with success",
+            collections: result.map((collection) => {
+                return {
+                    id: collection.id,
+                    title: collection.title,
+                    description: collection.description,
+                    isPublic: collection.isPublic,
+                    userId: collection.userId,
+                }
+            })
+        }
+    }
+
+    @Response<CollectionResponse>(200, "Collection retrieved with success", {
+        success: true, message: "Collection retrieved with success", id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        title: "Title",
+        description: "Description about the collection",
+        isPublic: true,
+        userId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    })
+    @Response<BaseResponse>(500, "Internal Server Error", { success: false, message: "Internal Server Error" })
+    @Response<BaseResponse>(404, "Not found", { success: false, message: "Could not retrieve the collection" })
+    @Get("public/get/{collectionId}")
+    public async getPublic(@Path() collectionId: string): Promise<CollectionResponse | null> {
+        const result = await this.collectionService.getPublic(collectionId);
+        if (result === null) {
+            this.setStatus(404);
+            return null;
+        }
+        return {
+            success: true,
+            message: "Collection retrieved with success",
+            id: result.id,
+            title: result.title,
+            description: result.description,
+            isPublic: result.isPublic,
+            userId: result.userId
+        };
+    }
 }

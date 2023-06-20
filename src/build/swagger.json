@@ -316,6 +316,54 @@
 				],
 				"type": "object"
 			},
+			"NftListResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"success": {
+						"type": "boolean"
+					},
+					"nfts": {
+						"items": {
+							"properties": {
+								"tokenUri": {
+									"type": "string",
+									"nullable": true
+								},
+								"tokenHash": {
+									"type": "string"
+								},
+								"tokenAddress": {
+									"type": "string"
+								},
+								"tokenId": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"tokenUri",
+								"tokenHash",
+								"tokenAddress",
+								"tokenId",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"message",
+					"success",
+					"nfts"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"NftResponse": {
 				"properties": {
 					"message": {
@@ -369,54 +417,6 @@
 					"tokenId",
 					"tokenAddress",
 					"collectionId"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"NftListResponse": {
-				"properties": {
-					"message": {
-						"type": "string"
-					},
-					"success": {
-						"type": "boolean"
-					},
-					"nfts": {
-						"items": {
-							"properties": {
-								"tokenUri": {
-									"type": "string",
-									"nullable": true
-								},
-								"tokenHash": {
-									"type": "string"
-								},
-								"tokenAddress": {
-									"type": "string"
-								},
-								"tokenId": {
-									"type": "string"
-								},
-								"name": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"tokenUri",
-								"tokenHash",
-								"tokenAddress",
-								"tokenId",
-								"name"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"message",
-					"success",
-					"nfts"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -875,7 +875,7 @@
 				]
 			}
 		},
-		"/collection/getAll": {
+		"/collection/get": {
 			"get": {
 				"operationId": "GetAll",
 				"responses": {
@@ -963,6 +963,143 @@
 				"parameters": []
 			}
 		},
+		"/collection/public/get": {
+			"get": {
+				"operationId": "GetAllPublic",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CollectionListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve the collections"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/collection/public/get/{collectionId}": {
+			"get": {
+				"operationId": "GetPublic",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/CollectionResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve the collection"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Collection"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/comments/create": {
 			"post": {
 				"operationId": "Create",
@@ -996,6 +1133,25 @@
 										"value": {
 											"success": false,
 											"message": "Could not create comment"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
 										}
 									}
 								}
@@ -1081,6 +1237,25 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -1153,6 +1328,25 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -1193,7 +1387,7 @@
 				}
 			}
 		},
-		"/comments/byCollection/{collectionId}": {
+		"/comments/collection/{collectionId}": {
 			"get": {
 				"operationId": "GetCommentsByCollectionId",
 				"responses": {
@@ -1202,18 +1396,20 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
+									"anyOf": [
 										{
 											"$ref": "#/components/schemas/CommentsListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
 										}
-									],
-									"nullable": true
+									]
 								}
 							}
 						}
 					},
-					"400": {
-						"description": "Bad request",
+					"404": {
+						"description": "Not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1269,7 +1465,7 @@
 				]
 			}
 		},
-		"/comments/getAll": {
+		"/comments/get": {
 			"get": {
 				"operationId": "GetCommentsByUserId",
 				"responses": {
@@ -1336,6 +1532,80 @@
 				"parameters": []
 			}
 		},
+		"/comments/public/collection/{collectionId}": {
+			"get": {
+				"operationId": "GetPublicCommentsByCollectionId",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CommentsListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve comments"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Comments"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/health": {
 			"get": {
 				"operationId": "Invoke",
@@ -1358,7 +1628,178 @@
 				"parameters": []
 			}
 		},
-		"/Nft/create": {
+		"/nft/list/{collectionId}": {
+			"get": {
+				"operationId": "GetNftList",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NftListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserLoginResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Invalid credentials",
+											"token": ""
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Could not retrieve nft list"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Nft"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/nft/public/list/{collectionId}": {
+			"get": {
+				"operationId": "GetPublicNftList",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NftListResponse"
+										},
+										{
+											"$ref": "#/components/schemas/BaseResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Bad request"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BaseResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Internal Server Error"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Nft"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "collectionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/nft/create": {
 			"post": {
 				"operationId": "Create",
 				"responses": {
@@ -1437,7 +1878,7 @@
 				}
 			}
 		},
-		"/Nft/list/{query}": {
+		"/nft/search/{query}": {
 			"get": {
 				"operationId": "List",
 				"responses": {

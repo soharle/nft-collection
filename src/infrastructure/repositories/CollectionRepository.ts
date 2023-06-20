@@ -7,6 +7,32 @@ import { ILogger } from "../../shared/interface/ILogger";
 @injectable()
 export class CollectionRepository implements ICollectionRepository {
     constructor(private db: PrismaClient, @inject("ILogger") private logger: ILogger) { }
+    public async allPublic(): Promise<Collection[]> {
+        try {
+            return this.db.collection.findMany({
+                where: {
+                    isPublic: true
+                }
+            });
+        } catch (e) {
+            this.logger.error((e as Error).message);
+            return [];
+        }
+    }
+
+    public async getPublic(id: string): Promise<Collection | null> {
+        try {
+            return this.db.collection.findFirst({
+                where: {
+                    id: id,
+                    isPublic: true
+                }
+            });
+        } catch (e) {
+            this.logger.error((e as Error).message);
+            return null;
+        }
+    }
 
     public async create(title: string, description: string | null, isPublic: boolean, userId: string): Promise<Collection | null> {
         try {
