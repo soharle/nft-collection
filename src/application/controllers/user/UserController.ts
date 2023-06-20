@@ -1,11 +1,8 @@
-import { Body, Controller, Get, Post, Request, Res, Response, Route, Security, Tags } from "tsoa";
-import { UserLoginRequest, UserLoginResponse } from "../../../domain/DTOs/UserLogin";
-import { UserRegisterRequest, UserRegisterResponse } from "../../../domain/DTOs/UserRegister";
+import { Body, Controller, Post, Response, Route, Tags } from "tsoa";
+import { UserLoginRequest, UserLoginResponse } from "../../../domain/DTOs/user/UserLogin";
 import { injectable } from "tsyringe";
 import { UserService } from "../../../domain/services/user/UserService";
-import express from "express";
-import { UserJwt } from "../../../domain/model/user/User";
-
+import { UserRegisterResponse, UserRegisterRequest } from "../../../domain/DTOs/user/UserRegister";
 
 @Route("user")
 @Tags("User")

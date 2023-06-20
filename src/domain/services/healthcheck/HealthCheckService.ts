@@ -1,6 +1,6 @@
 
 import { injectable } from "tsyringe";
-import { HealthCheckResponse } from "../../DTOs/HealthCheckResponse";
+import { HealthCheckResponse } from "../../DTOs/healthcheck/HealthCheckResponse";
 
 
 @injectable()

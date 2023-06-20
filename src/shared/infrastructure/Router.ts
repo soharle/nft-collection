@@ -16,7 +16,6 @@ export class ApiRouter {
   public create(): Router {
     const router = Router();
 
-    RegisterRoutes(router);
 
     router
       .use(helmet())
@@ -27,15 +26,18 @@ export class ApiRouter {
           extended: false
         })
       )
+      .use(json())
+      .use(compression())
       .use("/swagger", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
         return res.send(
           swaggerUi.generateHTML(await import("../../build/swagger.json"))
         );
       })
-      .use(json())
-      .use(compression())
-      .use(this.errorHandler.handle);
 
+
+    RegisterRoutes(router);
+
+    router.use(this.errorHandler.handle);
 
     return router;
   }

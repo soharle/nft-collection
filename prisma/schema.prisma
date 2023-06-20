@@ -16,6 +16,7 @@ model User {
   password    String
   name        String
   Collections Collection[]
+  Comments    Comments[]
 }
 
 model Collection {
@@ -26,19 +27,26 @@ model Collection {
   title       String
   comments    Comments[]
   Nfts        Nft[]
+  isPublic    Boolean    @default(false)
 }
 
 model Comments {
-  id           String      @id @default(uuid())
+  id           String     @id @default(uuid())
   rating       Int
   text         String?
-  Collection   Collection? @relation(fields: [collectionId], references: [id])
-  collectionId String?
+  User         User       @relation(fields: [userId], references: [id])
+  userId       String
+  Collection   Collection @relation(fields: [collectionId], onDelete: Cascade, references: [id])
+  collectionId String
 }
 
 model Nft {
-  id String @id @default(uuid())
-  
-  Collection   Collection @relation(fields: [collectionId], references: [id])
+  id           String     @id @default(uuid())
+  tokenId      String
+  tokenAddress String
+  name         String
+  tokenHash    String
+  tokenUri     String?
+  Collection   Collection @relation(fields: [collectionId], onDelete: Cascade, references: [id])
   collectionId String
 }

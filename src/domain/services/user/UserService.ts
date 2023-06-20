@@ -1,8 +1,7 @@
 import { inject, injectable } from "tsyringe";
-import { Configuration } from "../../../config";
-import { HealthCheckResponse } from "../../DTOs/HealthCheckResponse";
-import { UserLoginRequest } from "../../DTOs/UserLogin";
-import { UserRegisterRequest } from "../../DTOs/UserRegister";
+import { HealthCheckResponse } from "../../DTOs/healthcheck/HealthCheckResponse";
+import { UserLoginRequest } from "../../DTOs/user/UserLogin";
+import { UserRegisterRequest } from "../../DTOs/user/UserRegister";
 import { IUserRepository } from "../../model/user/IUserRepository";
 import { User } from "../../model/user/User";
 import { AuthService } from "../auth/AuthService";
@@ -32,13 +31,13 @@ export class UserService {
         }
     }
 
-    public async login(login: UserLoginRequest): Promise<string> {
+    public async login(login: UserLoginRequest): Promise<string | null> {
         const result = await this.userRepository.findByEmail(login.email);
         if (result != null && await this.authService.comparePassword(login.password, result.password)) {
             return await this.authService.getJwtToken(result);
         }
 
-        throw new Error("Invalid credentials");
+        return null;
     }
 
     public async getUser(email: string): Promise<User> {
