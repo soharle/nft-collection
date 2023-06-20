@@ -12,8 +12,7 @@ export class CommentsService {
     public async create(text: string | null, rating: number, collectionId: string, userId: string): Promise<Comment | null> {
         const collection = await this.collectionRepository.findById(collectionId);
         //check if collection exists and if it is public
-        if (collection === null || !collection.isPublic || collection.userId !== userId) {
-            console.log("collection not found")
+        if (collection === null || !collection.isPublic && collection.userId !== userId) {
             return null;
         }
 
